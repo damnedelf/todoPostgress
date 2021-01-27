@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>VanillaJS * TodoMVC</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+       <!-- <link rel="stylesheet" href="style.css"> -->
+       <link rel="stylesheet" href="http://todomvc.com/examples/vanillajs/node_modules/todomvc-common/base.css">
+       <link rel="stylesheet" href="http://todomvc.com/examples/vanillajs/node_modules/todomvc-app-css/index.css">
+        <!-- <script src="ap.js"></script> -->
+    </head>
+    <body class="learn-bar">
+
+    <!-- leftSideBanner -->
+    <aside class="learn">
+
+        <header>
+            <h3>JavaScript</h3>
+            <span class="source-links">
+                    <h5> Vanilla JavaScript Example</h5>
+                    <a href=https://github.com/tastejs/todomvc/tree/gh-pages/examples/vanillajs>Source</a>
+            </span>
+
+        </header>
+        <hr>
+
+        <blockquote class = "quote speech-bubble">
+
+          <p>JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions,
+            most known as the scripting language for Web pages, but used in many non-browser environments as well such as node.js or Apache CouchDB.
+          </p>
+          <footer>
+            <a href = http://developer.mozilla.org/en-US/docs/JavaScript>JavaScript</a>
+          </footer>
+       </blockquote>
+
+
+       <footer>
+          <hr>
+          <em>
+            If you have other helpful links to share, or find any of the links above no longer work, please<a href = https://github.com/tastejs/todomvc/issues> let us know</a>
+
+          </em>
+        </footer>
+    </aside>
+
+
+
+    <!-- midTaskInput -->
+
+    <section class = 'todoapp'>
+        <header class = "header">
+            <h1>todos</h1>
+            <input class = "new-todo" placeholder="What needs to be done?" autofocus>
+        </header>
+        <section class="main" style="display: none;">
+            <input id="toggle-all" class="toggle-all" type = "checkbox">
+            <label id='mark-em-all' class ="" for="toggle-all">Marks all as complete</label>
+            <ul id="todo-list" class="todo-list"></ul>
+        </section>
+        <footer class = footer style ='display:none' id='footer-bar'>
+            <span class='todo-count'>
+                <strong id='count'></strong>
+
+            </span>
+            <ul class = 'filters'>
+
+                <li>
+                    <span class='selected' id='all' style='color: inherit;
+                    margin: 3px;
+                    padding: 3px 7px;
+                    text-decoration: none;
+                    border: 1px solid transparent;
+                    border-radius: 3px;' >All</span>
+                </li>
+                <li>
+                    <span id='active' style='color: inherit;
+                    margin: 3px;
+                    padding: 3px 7px;
+                    text-decoration: none;
+                    border: 1px solid transparent;
+                    border-radius: 3px;'>Active</span>
+                </li>
+                <li>
+                    <span id = 'completed' style='color: inherit;
+                    margin: 3px;
+                    padding: 3px 7px;
+                    text-decoration: none;
+                    border: 1px solid transparent;
+                    border-radius: 3px;'>Completed</span>
+                </li>
+
+            </ul>
+            <button style = 'position:absolute;right:400px ;display: none;'id="testgetbtn" >TEST</button>
+        </footer>
+    </section>
+
+
+
+
+        <footer class="info">
+            <p>Double-click to edit a todo</p>
+            <p>
+                Created by
+                <a href="http://twitter.com/oscargodson">Oscar Godson</a>
+            </p>
+            <p>
+                Refactored by
+                <a href="https://github.com/cburgmer">Christoph Burgmer</a>
+            </p>
+            <p>
+                Part of
+                <a href="http://todomvc.com">TodoMVC</a>
+            </p>
+            <h3 id='clear-local' style="font-size: large;">drop db</h3>
+        </footer>
+
+     
+        <script  src="src/Model.js"></script>
+        <!-- <script  src="src/ToDoCollection.js"></script> -->
+        <script  src="src/Store.js"></script>
+        <script  src="src/View.js"></script>
+        <script  src="src/Template.js"></script>
+        <script  src="src/main.js"></script> 
+
+
+    </body>
+</html>
