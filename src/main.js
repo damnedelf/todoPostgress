@@ -1,68 +1,57 @@
-const inputText = document.querySelector("input.new-todo"); //input text
-const markThemAllBtn = document.querySelector("#mark-em-all"); //btn for mark unmark;
-const clrLclBtn = document.querySelector("#clear-local"); //clear local btn
 let data = localStorage.getItem("count"); //for check if localstorage is empty and pull or not
 let status; // var for filters view
 //filter btns
-let allBtn = document.querySelector("#all");
-let activeBtn = document.querySelector("#active");
-let completedBtn = document.querySelector("#completed");
+
 
 if (data && data != 0) {
   Store.get(View.showAll);
   View.filter(Store.getStatusFilter());
-  View.counterOnReload();
+  Store.counter();
+  View.counter(Store.getCount());
   View.showFooterBar(true, true);
 } else if (data == 0) {
   View.showFooterBar(false, false);
 }
-let testBtn = document.querySelector("#testgetbtn");
-testBtn.addEventListener("click", function () {
-  //  function handler(result)
-  //  {console.log(result)}
-  console.log("done");
-  Store.counter();
-});
+
+emitter.subscribe(`event:test`, (data) => console.log(data));
 //add todo > array,storage,html DOM
-inputText.addEventListener("keydown", function (e) {
-  if (e.keyCode == 13 && this.value !== "") {
-    let hint = this;
-    //emit('todoAdded', new Model(hint.value, result));
-    function postTodoCallback(result) {
-      let todo = new Model(hint.value, result);
-      View.showTodo(todo);
+emitter.subscribe(`event:onEnter`, function (id) {
+  let x = Store.getCount();
+  x++;
+  function postTodoCallback(result) {
+    let todo = new Model(id, result);
+    View.showTodo(todo);
 
-      hint.value = "";
-      View.showFooterBar(true, true);
-    }
-
-    Store.postTodo(hint.value, postTodoCallback, View.counter);
+    View.showFooterBar(true, true);
   }
-});
-//delete/mark
-mainSection.addEventListener("click", function (e) {
-  let x = e.target;
-  let id;
-  if (x.className == "destroy") {
-    id = x.id.slice(7);
-    View.delete(id);
 
-    Store.delete(id, View.counter);
-  } else if (x.className == "toggle") {
-    id = x.id.slice(5);
-    Store.update(id);
-    View.mark(id);
-  }
+  Store.postTodo(id, postTodoCallback);
+  View.counter(x);
 });
 
-//clear local storage
-clrLclBtn.addEventListener("click", function () {
+//delete/
+emitter.subscribe(`event:onDelete`, function (id) {
+  View.delete(id);
+  let x = Store.getCount();
+  x--;
+
+  Store.delete(id);
+  View.counter(x);
+});
+//mark
+emitter.subscribe(`event:onMark`, function (id) {
+  Store.update(id);
+  View.mark(id);
+});
+
+//clear
+emitter.subscribe(`event:onClear`, function () {
   localStorage.clear();
   Store.dropDb();
 });
 
 //mark em all
-markThemAllBtn.addEventListener("click", function () {
+emitter.subscribe(`event:markAll`, function () {
   let status = markThemAllBtn.classList.contains("completed");
   View.markEmAll(status);
   markThemAllBtn.classList.toggle("completed");
@@ -70,12 +59,7 @@ markThemAllBtn.addEventListener("click", function () {
 });
 
 //filters
-allBtn.addEventListener("click", function () {
-  View.filter("all");
-});
-activeBtn.addEventListener("click", function () {
-  View.filter("active");
-});
-completedBtn.addEventListener("click", function () {
-  View.filter("completed");
-});
+emitter.subscribe(`event:allBtn`,()=>View.filter("all"));
+emitter.subscribe(`event:activeBtn`,()=>View.filter("active"));
+emitter.subscribe(`event:completedBtn`,()=>View.filter("completed"));
+  

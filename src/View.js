@@ -1,6 +1,16 @@
 const mainSection = document.querySelector(".main"); // main pole where uls lives
 const filtersBar = document.querySelector("#footer-bar"); //footer bar with counter and filters
 let todoUl = document.querySelector("#todo-list");
+const clrLclBtn = document.querySelector("#clear-local"); //clear local btn
+const markThemAllBtn = document.querySelector("#mark-em-all"); //btn for mark unmark;
+
+let testBtn = document.querySelector("#testgetbtn");
+const inputText = document.querySelector("input.new-todo"); //input text
+let allBtn = document.querySelector("#all");
+let activeBtn = document.querySelector("#active");
+let completedBtn = document.querySelector("#completed");
+const emitter = new EventEmitter();
+
 // tag visibility
 function displayStyle(tag, visibility) {
   if (visibility) {
@@ -9,6 +19,44 @@ function displayStyle(tag, visibility) {
     tag.style = "display:none";
   }
 }
+///emit => listeners
+//input on enter
+inputText.addEventListener("keydown", function (e) {
+  if (e.keyCode == 13 && this.value !== "") {
+    emitter.emit(`event:onEnter`, this.value);
+    this.value = ``;
+  }
+});
+// emit on click=>delete,click=>mark
+mainSection.addEventListener("click", function (e) {
+  let x = e.target;
+  let id;
+  if (x.className == "destroy") {
+    id = x.id.slice(7);
+    emitter.emit(`event:onDelete`, id);
+  } else if (x.className == "toggle") {
+    id = x.id.slice(5);
+    emitter.emit(`event:onMark`, id);
+  }
+});
+//emit => click clearbtn
+clrLclBtn.addEventListener("click", function () {
+  emitter.emit(`event:onClear`);
+});
+//emit -< click mark them all
+markThemAllBtn.addEventListener("click", function () {
+  emitter.emit(`event:markAll`);
+});
+//emit filter buttons on click
+allBtn.addEventListener("click", function () {
+  emitter.emit(`event:allBtn`);
+});
+activeBtn.addEventListener("click", function () {
+  emitter.emit(`event:activeBtn`);
+});
+completedBtn.addEventListener("click", function () {
+  emitter.emit(`event:completedBtn`);
+});
 
 class View {
   constructor() {}
@@ -40,11 +88,9 @@ class View {
       }
     }
   }
-  static counter() {
+  static counter(x) {
     let target = document.querySelector("#count");
-   function handler(result)
-    {
-      let x = result;
+   
       Store.setCount(x);
       if (x == 1) {
         target.textContent = `${x} item left`;
@@ -54,12 +100,9 @@ class View {
       } else {
         View.showFooterBar(true, false);
       }
-      
     }
-    Store.counter(handler);
+    
 
-   
-  }
   static counterOnReload() {
     let target = document.querySelector("#count");
     let x = Store.getCount();

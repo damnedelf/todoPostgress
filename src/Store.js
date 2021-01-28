@@ -11,7 +11,6 @@ class Store {
       .then((response) => response.text())
       .then((result) => {
         callback(JSON.parse(result));
-        console.log(`catch`);
       })
       .catch((error) => alert(`get array from db ${error}`));
   }
@@ -22,13 +21,13 @@ class Store {
     return localStorage.getItem("status");
   }
   //make request for new todo in db and take id of dat todo
-  static postTodo(name, callback,callback2) {
+  static postTodo(name, callback) {
     fetch(`/todo/post?message=${name}`, { method: "POST" })
       .then((response) => response.text())
       .then((result) => {
         callback(result);
       })
-      .then(function(){callback2();})
+
       .catch((error) => alert(`some error : ${error}`));
   }
   //drop db
@@ -47,11 +46,10 @@ class Store {
     }
     f();
   }
-  static delete(id,callback) {
+  static delete(id) {
     fetch(`/todo/delete?message=${id}`, { method: "DELETE" })
       .then((response) => response.text())
       .then((result) => console.log(result))
-      .then(function(){callback();})
       .catch((error) => alert(`error delete  ${error}`));
   }
   static update(id) {
@@ -66,17 +64,12 @@ class Store {
       .then((result) => console.log(result))
       .catch((error) => alert(`error updated all  ${error}`));
   }
-  static counter(handler) {
+  static counter() {
     fetch("/todo/getall/count", { method: "GET" })
       .then((response) => response.text())
       .then((result) => {
-        handler(result);
-      });
-    // .then((response) => response.text())
-    // .then((result) => {
-
-    //   callback(result);
-    // })
-    // .catch(error=> alert(`get array from db ${error}`));
+        localStorage.setItem("count", result);
+      })
+     .catch(error=> alert(`counter from db ${error}`));
   }
 }
