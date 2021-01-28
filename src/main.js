@@ -8,30 +8,35 @@ let allBtn = document.querySelector("#all");
 let activeBtn = document.querySelector("#active");
 let completedBtn = document.querySelector("#completed");
 
-if (data) {
+if (data && data != 0) {
   Store.get(View.showAll);
   View.filter(Store.getStatusFilter());
-
   View.counterOnReload();
   View.showFooterBar(true, true);
+} else if (data == 0) {
+  View.showFooterBar(false, false);
 }
-// let testBtn = document.querySelector('#testgetbtn');
-// testBtn.addEventListener('click',function(){
-//   Store.getLength();
-//   console.log('done');
-// })
+let testBtn = document.querySelector("#testgetbtn");
+testBtn.addEventListener("click", function () {
+  //  function handler(result)
+  //  {console.log(result)}
+  console.log("done");
+  Store.counter();
+});
 //add todo > array,storage,html DOM
 inputText.addEventListener("keydown", function (e) {
   if (e.keyCode == 13 && this.value !== "") {
     let hint = this;
+    //emit('todoAdded', new Model(hint.value, result));
     function postTodoCallback(result) {
       let todo = new Model(hint.value, result);
       View.showTodo(todo);
-      View.showFooterBar(true, true);
-      View.counter();
+
       hint.value = "";
+      View.showFooterBar(true, true);
     }
-    Store.postTodo(this.value, postTodoCallback);
+
+    Store.postTodo(hint.value, postTodoCallback, View.counter);
   }
 });
 //delete/mark
@@ -41,8 +46,8 @@ mainSection.addEventListener("click", function (e) {
   if (x.className == "destroy") {
     id = x.id.slice(7);
     View.delete(id);
-    View.counter();
-    Store.delete(id);
+
+    Store.delete(id, View.counter);
   } else if (x.className == "toggle") {
     id = x.id.slice(5);
     Store.update(id);

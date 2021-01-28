@@ -42,18 +42,23 @@ class View {
   }
   static counter() {
     let target = document.querySelector("#count");
-    let liArray = Array.from(mainSection.querySelectorAll("li"));
-    let x = liArray.length;
-    Store.setCount(x);
-
-    if (x == 1) {
-      target.textContent = `${x} item left`;
-      View.showFooterBar(true, true);
-    } else if (x > 1) {
-      target.textContent = `${x} items left`;
-    } else {
-      View.showFooterBar(true, false);
+   function handler(result)
+    {
+      let x = result;
+      Store.setCount(x);
+      if (x == 1) {
+        target.textContent = `${x} item left`;
+        View.showFooterBar(true, true);
+      } else if (x > 1) {
+        target.textContent = `${x} items left`;
+      } else {
+        View.showFooterBar(true, false);
+      }
+      
     }
+    Store.counter(handler);
+
+   
   }
   static counterOnReload() {
     let target = document.querySelector("#count");

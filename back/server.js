@@ -8,7 +8,11 @@ var server = http.createServer();
 const mongoose = require("mongoose");
 const todo = require("./models/todo_model");
 //db connect
-mongoose.connect("mongodb://localhost/toDoCollection");
+mongoose.connect("mongodb://localhost/toDoCollection", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+});
 mongoose.connection
   .once("open", function () {
     console.log("connection is up");
@@ -18,11 +22,9 @@ mongoose.connection
   });
 //////create server + index +xhr js
 server.on("request", function (request, response) {
-  var requestUrl =new URL(request.url, `http://${request.headers.host}`);
+  var requestUrl = new URL(request.url, `http://${request.headers.host}`);
   var urlParsed = url.parse(request.url, true);
-  console.log(request.method);
-  console.log(urlParsed.pathname);
-  // console.log(request.headers);
+  console.log(request.url);
   if (request.url == "/") {
     response.writeHead(200, { "Content-Type": "text/html" });
     fs.readFile("index.html", function (err, data) {
@@ -36,71 +38,101 @@ server.on("request", function (request, response) {
     });
     //drop db
   } else if (request.url == "/drop") {
-    mongoose.connection.collections.todos.drop();
-    console.log("dropped");
+    try {
+      mongoose.connection.collections.todos.drop();
+      response.end("db has been dropped");
+    } catch (err) {
+      response.end(`Oops.. error:...${err}`);
+    }
+
     /////////make new todo in mongo
-  } else if (request.method == "POST"&&requestUrl.pathname=='/todo/post') {
+  } else if (request.method == "POST" && requestUrl.pathname == "/todo/post") {
     let person = new todo({
       name: urlParsed.query.message.toString(),
       id: nanoid(),
       isCompleted: false,
     });
-    person.save();
-    response.end(person.id);
+    try {
+      person.save();
+      response.end(person.id);
+    } catch (error) {
+      response.write(`Some error ${error}`);
+      response.end();
+    }
 
     /////delete todo
-  } else if (request.method == "DELETE"&&requestUrl.pathname ==`/todo/delete`) {
-    todo.findOneAndRemove({ id: urlParsed.query.message }).then(function () {});
+  } else if (
+    request.method == "DELETE" &&
+    requestUrl.pathname == `/todo/delete`
+  ) {
+    try {
+      todo
+        .findOneAndRemove({ id: urlParsed.query.message })
+        .then(function () {});
+
+      response.end(`${urlParsed.query.message} deleted`);
+    } catch (error) {
+      response.write(`error ${error}`);
+      response.end();
+    }
+
     //mark todo request
   } else if (request.method == "PATCH") {
-    todo.findOne({ id: urlParsed.query.message }).then(function (result) {
-      todo
-        .findOneAndUpdate(
-          { id: urlParsed.query.message },
-          { $set: { isCompleted: !result.isCompleted } }
-        )
-        .then(function () {});
-    });
+    try {
+      todo.findOne({ id: urlParsed.query.message }).then(function (result) {
+        todo
+          .findOneAndUpdate(
+            { id: urlParsed.query.message },
+            { $set: { isCompleted: !result.isCompleted } }
+          )
+          .then(function () {
+            response.end(`${urlParsed.query.message} updated`);
+          });
+      });
+    } catch (error) {
+      response.write(`error ${error}`);
+      response.end();
+    }
     //mark all request
   } else if (request.method == "PUT") {
     let condition = urlParsed.query.message;
-    todo
-      .updateMany({}, { $set: { isCompleted: condition } })
-      .then(function () {});
-      //get array
-  } else if (request.url=='/todo/getall'&&request.method=='GET') {
-   todo.find({}).then(function(result){
-       response.end(JSON.stringify(result));
-      
-   })
+    try {
+      todo
+        .updateMany({}, { $set: { isCompleted: condition } })
+        .then(function () {
+          response.end(`all updated`);
+        });
+    } catch (error) {
+      response.write(`all updated error ${error}`);
+      response.end();
+    }
+    //get array
+  } else if (request.url == "/todo/getall" && request.method == "GET") {
+    try {
+      todo.find({}).then(function (result) {
+        response.end(JSON.stringify(result));
+      });
+    } catch (error) {
+      response.write(`get array from db ${error}`);
+      response.end();
+    }
   }
-  //get lenght for counter 
-//   else if (request.url == "/todo/getlength") {
-//  todo.find({}).then(function(result){
-//   console.log(result.length);
- 
-// })
-//   }
-// else if (request.url == "/todo/getlength") {
-//   todo.find({}).then(function(result){
-//    let i = 0;
-//     for(let a of result){
-//      i++;
-//    }
-//   console.log(i);
-//  })
-//    }
-else if (request.url == "/todo/getlength") {
- todo.estimatedDocumentCount({}).then(function(result){
-   console.log(result);
- }) 
- 
-   }
-else {
+  //counter
+  else if (request.url == "/todo/getall/count") {
+    try {
+      todo.find({}).then(function (result) {
+        response.write(result.length + "");
+        response.end();
+      });
+    } catch (error) {
+      response.write(`get array from db ${error}`);
+      response.end();
+    }
+  } else {
     response.writeHead(200, { "Content-Type": "application.js" });
     fs.readFile(`.${request.url}`, function (err, data) {
       if (err) {
-        response.write("smth go wrong ");
+        response.write(`smth go wrong ${err}`);
         response.end();
       } else {
         response.write(data);

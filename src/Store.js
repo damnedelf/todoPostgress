@@ -11,7 +11,9 @@ class Store {
       .then((response) => response.text())
       .then((result) => {
         callback(JSON.parse(result));
-      });
+        console.log(`catch`);
+      })
+      .catch((error) => alert(`get array from db ${error}`));
   }
   static setStatusFilter(status) {
     localStorage.setItem("status", status);
@@ -20,35 +22,61 @@ class Store {
     return localStorage.getItem("status");
   }
   //make request for new todo in db and take id of dat todo
-  static postTodo(name, callback) {
+  static postTodo(name, callback,callback2) {
     fetch(`/todo/post?message=${name}`, { method: "POST" })
       .then((response) => response.text())
       .then((result) => {
         callback(result);
-      });
+      })
+      .then(function(){callback2();})
+      .catch((error) => alert(`some error : ${error}`));
   }
   //drop db
   static dropDb() {
-    fetch("/drop", { METHOD: "DELETE" }).then(console.log("Db dropped"));
+    async function f() {
+      try {
+        let response = await fetch("/drop", { METHOD: "DELETE" });
+        let message = await response.text();
+        console.log(message);
+      } catch (err) {
+        let response = await fetch("/drop", { METHOD: "DELETE" });
+        let message = await response.text();
+        console.log(`${err}
+        DB error ${message}`);
+      }
+    }
+    f();
   }
-  static getLength(callback) {
-    fetch(`/todo/getlength`, { method: "GET" });
-    // .then((response) => response.text())
-    // .then((result) => {callback(result);
-
-    // });
-  }
-  static delete(id) {
-    fetch(`/todo/delete?message=${id}`, { method: "DELETE" }).then(
-      console.log(`${id} deleted`)
-    );
+  static delete(id,callback) {
+    fetch(`/todo/delete?message=${id}`, { method: "DELETE" })
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .then(function(){callback();})
+      .catch((error) => alert(`error delete  ${error}`));
   }
   static update(id) {
-    fetch(`/todo/patch?message=${id}`, { method: "PATCH" }).then(
-      console.log(`updated ${id}`)
-    );
+    fetch(`/todo/patch?message=${id}`, { method: "PATCH" })
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => alert(`error update ${error}`));
   }
   static updateAll(status) {
-    fetch(`/todo/put?message=${!status}`, { method: "PUT" });
+    fetch(`/todo/put?message=${!status}`, { method: "PUT" })
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => alert(`error updated all  ${error}`));
+  }
+  static counter(handler) {
+    fetch("/todo/getall/count", { method: "GET" })
+      .then((response) => response.text())
+      .then((result) => {
+        handler(result);
+      });
+    // .then((response) => response.text())
+    // .then((result) => {
+
+    //   callback(result);
+    // })
+    // .catch(error=> alert(`get array from db ${error}`));
   }
 }
