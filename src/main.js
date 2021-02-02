@@ -15,18 +15,18 @@ if (data && data != 0) {
 
 emitter.subscribe(`event:test`, (data) => console.log(data));
 //add todo > array,storage,html DOM
-emitter.subscribe(`event:onEnter`, function (id) {
+emitter.subscribe(`event:onEnter`, function (name) {
   let x = Store.getCount();
-  x++;
-  function postTodoCallback(result) {
-    let todo = new Model(id, result);
+   x++;
+  function postTodoCallback(id) {
+    let todo = new Model(name, id);
     View.showTodo(todo);
 
     View.showFooterBar(true, true);
   }
 
-  Store.postTodo(id, postTodoCallback);
-  View.counter(x);
+  Store.postTodo(name, postTodoCallback);
+   View.counter(x);
 });
 
 //delete/

@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node back/server.js",
+    "run": "nodemon back/server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^5.11.13",
-    "nanoid": "^3.1.20"
+    "body-parser": "^1.19.0",
+    "mysql2": "^2.2.5",
+    "nanoid": "^3.1.20",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.5.0"
   }
 }

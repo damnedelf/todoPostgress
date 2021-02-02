@@ -22,7 +22,7 @@ class Store {
   }
   //make request for new todo in db and take id of dat todo
   static postTodo(name, callback) {
-    fetch(`/todo/post?message=${name}`, { method: "POST" })
+    fetch(`/todo/post`, { method: "POST" , body: name})
       .then((response) => response.text())
       .then((result) => {
         callback(result);
@@ -32,34 +32,25 @@ class Store {
   }
   //drop db
   static dropDb() {
-    async function f() {
-      try {
-        let response = await fetch("/drop", { METHOD: "DELETE" });
-        let message = await response.text();
-        console.log(message);
-      } catch (err) {
-        let response = await fetch("/drop", { METHOD: "DELETE" });
-        let message = await response.text();
-        console.log(`${err}
-        DB error ${message}`);
-      }
-    }
-    f();
+    fetch(`/drop`,{method:'DELETE'})
+    .then(()=>console.log(`dropped`))
+    .catch((err)=>console.log(`some drop db ${err}`))
+
   }
   static delete(id) {
-    fetch(`/todo/delete?message=${id}`, { method: "DELETE" })
+    fetch(`/todo/delete`, { method: "DELETE", body:id })
       .then((response) => response.text())
       .then((result) => console.log(result))
       .catch((error) => alert(`error delete  ${error}`));
   }
   static update(id) {
-    fetch(`/todo/patch?message=${id}`, { method: "PATCH" })
+    fetch(`/todo/patch`, { method: "PATCH", body:id })
       .then((response) => response.text())
       .then((result) => console.log(result))
       .catch((error) => alert(`error update ${error}`));
   }
   static updateAll(status) {
-    fetch(`/todo/put?message=${!status}`, { method: "PUT" })
+    fetch(`/todo/put`, { method: "PUT", body:!status })
       .then((response) => response.text())
       .then((result) => console.log(result))
       .catch((error) => alert(`error updated all  ${error}`));
